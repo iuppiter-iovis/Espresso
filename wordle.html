@@ -98,7 +98,8 @@
       }
     }
 
-    document.getElementById('submit-btn').addEventListener('click', () => {
+    // Gestione invio con click e tasto Invio
+    function submitGuess() {
       const input = document.getElementById('guess-input');
       const guess = input.value.trim().toLowerCase();
       const messageEl = document.getElementById('message');
@@ -143,16 +144,26 @@
       }
 
       if (guess === solution) {
-        messageEl.textContent = 'Complimenti! Hai indovinato!';
+        alert('Hai vinto!');
         document.getElementById('submit-btn').disabled = true;
+        document.getElementById('guess-input').disabled = true;
       } else if (currentRow >= 5) {
-        messageEl.textContent = `Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`;
+        alert(`Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`);
         document.getElementById('submit-btn').disabled = true;
+        document.getElementById('guess-input').disabled = true;
       }
 
       currentRow++;
       input.value = '';
       input.focus();
+    }
+
+    document.getElementById('submit-btn').addEventListener('click', submitGuess);
+    document.getElementById('guess-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitGuess();
+      }
     });
   </script>
 </body>
