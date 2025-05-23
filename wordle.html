@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wordle - Il Caffè</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wordle-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #3e2f1c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      background-color: #fff;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .input-row input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      width: 120px;
+    }
+    .input-row button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #6f4e37;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .input-row button:hover {
+      background-color: #5b3f2c;
+    }
+    .message {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Il caffè ☕ - Wordle</h1>
+  </header>
+  <main class="wordle-container">
+    <div class="grid" id="grid"></div>
+    <div class="input-row">
+      <input type="text" id="guess-input" maxlength="6" placeholder="Inserisci 6 lettere">
+      <button id="submit-btn">Invia</button>
+    </div>
+    <div class="message" id="message"></div>
+  </main>
+  <script>
+    let answers = [];
+    let acceptables = [];
+    let solution = '';
+    let currentRow = 0;
+
+    // Carica le parole dai file
+    Promise.all([
+      fetch('DaIndovinare.txt').then(r => r.text()),
+      fetch('Accettabili.txt').then(r => r.text())
+    ]).then(data => {
+      answers = data[0].split(/\r?\n/).filter(w => w.length === 6);
+      acceptables = data[1].split(/\r?\n/).filter(w => w.length === 6);
+      // Unisci entrambe le liste per validazione
+      acceptables = Array.from(new Set([...acceptables, ...answers]));
+      // Scegli soluzione casuale
+      solution = answers[Math.floor(Math.random() * answers.length)].toLowerCase();
+      initGrid();
+    });
+
+    function initGrid() {
+      const grid = document.getElementById('grid');
+      for (let i = 0; i < 36; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        grid.appendChild(tile);
+      }
+    }
+
+    document.getElementById('submit-btn').addEventListener('click', () => {
+      const input = document.getElementById('guess-input');
+      const guess = input.value.trim().toLowerCase();
+      const messageEl = document.getElementById('message');
+      if (guess.length !== 6) {
+        messageEl.textContent = 'La parola deve contenere 6 lettere.';
+        return;
+      }
+      if (!acceptables.includes(guess)) {
+        messageEl.textContent = 'Parola non valida.';
+        return;
+      }
+      messageEl.textContent = '';
+      // Colora la riga corrente
+      const rowStart = currentRow * 6;
+      const tiles = document.querySelectorAll('.tile');
+      const solArr = solution.split('');
+      const guessArr = guess.split('');
+      const tileColors = Array(6).fill('grey');
+
+      // Prima passata: verdi
+      for (let i = 0; i < 6; i++) {
+        if (guessArr[i] === solArr[i]) {
+          tileColors[i] = '#6aaa64';
+          solArr[i] = null;
+          guessArr[i] = null;
+        }
+      }
+      // Seconda passata: gialli
+      for (let i = 0; i < 6; i++) {
+        if (guessArr[i] && solArr.includes(guessArr[i])) {
+          tileColors[i] = '#c9b458';
+          solArr[solArr.indexOf(guessArr[i])] = null;
+        }
+      }
+
+      // Assegna lettere e colori
+      for (let i = 0; i < 6; i++) {
+        const tile = tiles[rowStart + i];
+        tile.textContent = guess[i].toUpperCase();
+        tile.style.backgroundColor = tileColors[i];
+        tile.style.color = '#fff';
+      }
+
+      if (guess === solution) {
+        messageEl.textContent = 'Complimenti! Hai indovinato!';
+        document.getElementById('submit-btn').disabled = true;
+      } else if (currentRow >= 5) {
+        messageEl.textContent = `Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`;
+        document.getElementById('submit-btn').disabled = true;
+      }
+
+      currentRow++;
+      input.value = '';
+      input.focus();
+    });
+  </script>
+</body>
+</html>
