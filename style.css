@@ -1,0 +1,60 @@
+/* Stile ispirato al caffè - "Espresso" */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background-color: #f5f0e6;
+  color: #3e2f1c;
+}
+
+header {
+  background-color: #6f4e37;
+  color: #fff;
+  padding: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+main {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.game {
+  background-color: #fff8f1;
+  border-left: 6px solid #6f4e37;
+  padding: 1.5rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.game h2 {
+  margin-top: 0;
+}
+
+.game a {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #6f4e37;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.game a:hover {
+  background-color: #5b3f2c;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #eee4d1;
+  color: #3e2f1c;
+}
