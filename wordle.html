@@ -87,7 +87,7 @@
 
       // Selezione soluzione basata sulla data: cambia ogni giorno
       const today     = new Date();
-      const startDate = new Date(2025, 0, 1);  // 1 gennaio 2025
+      const startDate = new Date(2025, 4, 23);  // 1 gennaio 2025
       const daysSince = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
       const index     = daysSince % answers.length;
       solution = answers[index].toLowerCase();
