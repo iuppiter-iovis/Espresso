@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connections - Il Caffè</title>
+  <link rel="stylesheet" href="connections.css">
+</head>
+<body>
+  <h1>☕ Connections del Giorno</h1>
+  <p>Scegli 4 parole che pensi siano collegate. Hai 4 tentativi.</p>
+  <div id="board" class="board"></div>
+  <button onclick="checkGroup()">Conferma gruppo</button>
+  <p id="errors">Errori: 0 / 4</p>
+  <p id="message"></p>
+
+  <script src="puzzles.js"></script>
+  <script src="connections.js"></script>
+</body>
+</html>
