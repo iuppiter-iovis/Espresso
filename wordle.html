@@ -29,6 +29,21 @@
       font-weight: bold;
       text-transform: uppercase;
       background-color: #fff;
+      transition: transform 0.3s ease;
+    }
+    .flip {
+      animation: flip 0.6s ease forwards;
+    }
+    @keyframes flip {
+      0% {
+        transform: rotateX(0deg);
+      }
+      50% {
+        transform: rotateX(90deg);
+      }
+      100% {
+        transform: rotateX(0deg);
+      }
     }
     .input-row {
       display: flex;
@@ -85,11 +100,11 @@
       // Unisci entrambe le liste per validazione
       acceptables = Array.from(new Set([...acceptables, ...answers]));
 
-      // Selezione soluzione basata sulla data: cambia ogni giorno
+      // Selezione soluzione basata sulla data: cambia ogni giorno, con start oggi 23/05/2025
       const today     = new Date();
-      const startDate = new Date(2025, 4, 23);  // 1 gennaio 2025
+      const startDate = new Date(2025, 4, 23);  // 23 maggio 2025
       const daysSince = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
-      const index     = daysSince % answers.length;
+      const index     = ((daysSince % answers.length) + answers.length) % answers.length;
       solution = answers[index].toLowerCase();
 
       initGrid();
@@ -118,14 +133,13 @@
         return;
       }
       messageEl.textContent = '';
-      // Colora la riga corrente
+
       const rowStart = currentRow * 6;
       const tiles = document.querySelectorAll('.tile');
       const solArr = solution.split('');
       const guessArr = guess.split('');
       const tileColors = Array(6).fill('grey');
 
-      // Prima passata: verdi
       for (let i = 0; i < 6; i++) {
         if (guessArr[i] === solArr[i]) {
           tileColors[i] = '#6aaa64';
@@ -133,7 +147,7 @@
           guessArr[i] = null;
         }
       }
-      // Seconda passata: gialli
+
       for (let i = 0; i < 6; i++) {
         if (guessArr[i] && solArr.includes(guessArr[i])) {
           tileColors[i] = '#c9b458';
@@ -141,12 +155,12 @@
         }
       }
 
-      // Assegna lettere e colori
       for (let i = 0; i < 6; i++) {
         const tile = tiles[rowStart + i];
         tile.textContent = guess[i].toUpperCase();
         tile.style.backgroundColor = tileColors[i];
         tile.style.color = '#fff';
+        tile.classList.add('flip');
       }
 
       if (guess === solution) {
