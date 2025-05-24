@@ -78,7 +78,7 @@
       cursor: pointer;
       color: #6f4e37;
     }
-    .help-panel {
+    .help-panel, .result-panel {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -93,16 +93,19 @@
       text-align: center;
       z-index: 1000;
     }
-    .help-panel h2 {
+    .help-panel h2, .result-panel h2 {
       margin-top: 0;
     }
-    .help-panel button {
+    .help-panel button, .result-panel button {
       margin-top: 1rem;
       background-color: #6f4e37;
       color: white;
       border: none;
       padding: 0.5rem 1rem;
       cursor: pointer;
+    }
+    .result-panel .share {
+      background-color: #3e2f1c;
     }
   </style>
 </head>
@@ -132,11 +135,18 @@
     </p>
     <button onclick="document.getElementById('help').style.display='none'">Chiudi</button>
   </div>
+  <div class="result-panel" id="result">
+    <h2 id="result-title"></h2>
+    <p id="result-text"></p>
+    <button class="share" onclick="shareResult()">Condividi</button>
+    <button onclick="document.getElementById('result').style.display='none'">Chiudi</button>
+  </div>
   <script>
     let answers = [];
     let acceptables = [];
     let solution = '';
     let currentRow = 0;
+    let attempts = 0;
 
     window.onload = () => {
       document.getElementById('help').style.display = 'flex';
@@ -165,6 +175,25 @@
         const tile = document.createElement('div');
         tile.className = 'tile';
         grid.appendChild(tile);
+      }
+    }
+
+    function showResult(title, text) {
+      document.getElementById('result-title').textContent = title;
+      document.getElementById('result-text').textContent = text;
+      document.getElementById('result').style.display = 'flex';
+    }
+
+    function shareResult() {
+      const text = document.getElementById('result-text').textContent;
+      const url = window.location.href;
+      const shareMsg = `${text}\nGioca anche tu: ${url}`;
+      if (navigator.share) {
+        navigator.share({ text: shareMsg });
+      } else {
+        navigator.clipboard.writeText(shareMsg).then(() => {
+          alert("Risultato copiato negli appunti!");
+        });
       }
     }
 
@@ -215,13 +244,13 @@
 
       if (guess === solution) {
         setTimeout(() => {
-          alert('Hai vinto!');
+          showResult('Hai vinto!', `Hai indovinato in ${currentRow + 1} tentativi.`);
           document.getElementById('submit-btn').disabled = true;
           document.getElementById('guess-input').disabled = true;
         }, 1200);
       } else if (currentRow >= 5) {
         setTimeout(() => {
-          alert(`Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`);
+          showResult('Gioco terminato', `La parola era: ${solution.toUpperCase()}`);
           document.getElementById('submit-btn').disabled = true;
           document.getElementById('guess-input').disabled = true;
         }, 1200);
