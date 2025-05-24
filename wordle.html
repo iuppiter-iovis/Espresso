@@ -35,15 +35,9 @@
       animation: flip 0.6s ease forwards;
     }
     @keyframes flip {
-      0% {
-        transform: rotateX(0deg);
-      }
-      50% {
-        transform: rotateX(90deg);
-      }
-      100% {
-        transform: rotateX(0deg);
-      }
+      0% { transform: rotateX(0deg); }
+      50% { transform: rotateX(90deg); }
+      100% { transform: rotateX(0deg); }
     }
     .input-row {
       display: flex;
@@ -70,11 +64,55 @@
     .message {
       font-size: 1.2rem;
     }
+    .top-bar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .top-bar button {
+      font-size: 1.2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6f4e37;
+    }
+    .help-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #6f4e37;
+      padding: 1rem;
+      width: 300px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 1000;
+    }
+    .help-panel h2 {
+      margin-top: 0;
+    }
+    .help-panel button {
+      margin-top: 1rem;
+      background-color: #6f4e37;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Il caffè ☕ - Wordle</h1>
+    <div class="top-bar">
+      <button onclick="document.getElementById('help').style.display='flex'">❓</button>
+      <button onclick="location.href='index.html'">🏠</button>
+    </div>
   </header>
   <main class="wordle-container">
     <div class="grid" id="grid"></div>
@@ -84,25 +122,36 @@
     </div>
     <div class="message" id="message"></div>
   </main>
+  <div class="help-panel" id="help">
+    <h2>Come si gioca</h2>
+    <p>Prova ad indovinare la parola del giorno composta da 6 lettere.</p>
+    <p>Ogni lettera inserita sarà colorata:<br>
+      <strong>Verde</strong>: lettera giusta e al posto giusto<br>
+      <strong>Giallo</strong>: lettera giusta ma nel posto sbagliato<br>
+      <strong>Grigio</strong>: lettera non presente
+    </p>
+    <button onclick="document.getElementById('help').style.display='none'">Chiudi</button>
+  </div>
   <script>
     let answers = [];
     let acceptables = [];
     let solution = '';
     let currentRow = 0;
 
-    // Carica le parole dai file
+    window.onload = () => {
+      document.getElementById('help').style.display = 'flex';
+    };
+
     Promise.all([
       fetch('DaIndovinare.txt').then(r => r.text()),
       fetch('Accettabili.txt').then(r => r.text())
     ]).then(data => {
       answers = data[0].split(/\r?\n/).filter(w => w.length === 6);
       acceptables = data[1].split(/\r?\n/).filter(w => w.length === 6);
-      // Unisci entrambe le liste per validazione
       acceptables = Array.from(new Set([...acceptables, ...answers]));
 
-      // Selezione soluzione basata sulla data: cambia ogni giorno, con start oggi 23/05/2025
       const today     = new Date();
-      const startDate = new Date(2025, 4, 23);  // 23 maggio 2025
+      const startDate = new Date(2025, 4, 23);
       const daysSince = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
       const index     = ((daysSince % answers.length) + answers.length) % answers.length;
       solution = answers[index].toLowerCase();
@@ -119,7 +168,6 @@
       }
     }
 
-    // Gestione invio con click e tasto Invio
     function submitGuess() {
       const input = document.getElementById('guess-input');
       const guess = input.value.trim().toLowerCase();
@@ -160,17 +208,23 @@
         tile.textContent = guess[i].toUpperCase();
         tile.style.backgroundColor = tileColors[i];
         tile.style.color = '#fff';
-        tile.classList.add('flip');
+        setTimeout(() => {
+          tile.classList.add('flip');
+        }, i * 200);
       }
 
       if (guess === solution) {
-        alert('Hai vinto!');
-        document.getElementById('submit-btn').disabled = true;
-        document.getElementById('guess-input').disabled = true;
+        setTimeout(() => {
+          alert('Hai vinto!');
+          document.getElementById('submit-btn').disabled = true;
+          document.getElementById('guess-input').disabled = true;
+        }, 1200);
       } else if (currentRow >= 5) {
-        alert(`Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`);
-        document.getElementById('submit-btn').disabled = true;
-        document.getElementById('guess-input').disabled = true;
+        setTimeout(() => {
+          alert(`Hai esaurito i tentativi. La parola era: ${solution.toUpperCase()}`);
+          document.getElementById('submit-btn').disabled = true;
+          document.getElementById('guess-input').disabled = true;
+        }, 1200);
       }
 
       currentRow++;
