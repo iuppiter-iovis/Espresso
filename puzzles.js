@@ -1,5 +1,5 @@
 const dailyPuzzles = {
-  "2025-05-23": {
+  "2025-05-24": {
     groups: [
       { category: "Animali", words: ["cane", "gatto", "criceto", "pesce"] },
       { category: "Colori", words: ["rosso", "verde", "giallo", "blu"] },
